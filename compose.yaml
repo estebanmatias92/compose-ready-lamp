@@ -38,9 +38,9 @@ services:
 
 secrets:
   db-root-pass:
-    file: ./db/mysql-root-pass.txt
+    file: ./db/db-root-pass.txt
   db-user-pass:
-    file: ./db/mysql-user-pass.txt
+    file: ./db/db-user-pass.txt
 
 volumes:
   db-data:

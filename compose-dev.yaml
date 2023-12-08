@@ -7,7 +7,7 @@ services:
       db:
         condition: service_healthy
     env_file: 
-      - .env.example
+      - .env
     ports:
       - "80:80"
     secrets:
@@ -15,11 +15,8 @@ services:
 
   db:
     image: mysql:5.7
-    environment:
-      - MYSQL_ROOT_PASSWORD_FILE=/run/secrets/db-root-pass
-      - MYSQL_DATABASE=${DB_NAME}
-      - MYSQL_USER=${DB_USER}
-      - MYSQL_PASSWORD_FILE=/run/secrets/db-user-pass
+    env_file:
+      - ./db/mysql-dev.env
     ports:
       - "3306:3306"
     volumes:
@@ -36,9 +33,9 @@ services:
 
 secrets:
   db-root-pass:
-    file: ./db/mysql-root-pass.example.txt
+    file: ./db/db-root-pass.example.txt
   db-user-pass:
-    file: ./db/mysql-user-pass.example.txt
+    file: ./db/db-user-pass.example.txt
 
 volumes:
   db-data:

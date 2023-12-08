@@ -50,7 +50,7 @@ RUN useradd -s /bin/bash -m $USER \
 USER $USER
 
 # Binding wordir with server directory
-RUN ln -s $WORKDIR/app/ /var/www/html/
+RUN ln -s $WORKDIR /var/www/html/
 
 # Replace the host SSH exe with the WSL distro SSH exe
 RUN git config --global --replace-all core.sshCommand "/usr/bin/ssh"
