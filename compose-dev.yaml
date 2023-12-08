@@ -11,7 +11,6 @@ services:
     ports:
       - "80:80"
     secrets:
-      - db-user
       - db-user-pass
 
   db:
@@ -25,8 +24,6 @@ services:
       - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
     secrets:
       - db-root-pass
-      - db-name
-      - db-user
       - db-user-pass
     healthcheck:
       test: ["CMD-SHELL", "mysqladmin ping -h localhost"]
@@ -37,10 +34,6 @@ services:
 secrets:
   db-root-pass:
     file: ./db/db-root-pass.example.txt
-  db-name:
-    environment: DB_NAME
-  db-user:
-    environment: DB_USER
   db-user-pass:
     file: ./db/db-user-pass.example.txt
 
