@@ -3,12 +3,13 @@ services:
     build:
       context: ./app
       target: development
+    depends_on:
+      db:
+        condition: service_healthy
     env_file: 
       - .env.example
     ports:
       - "80:80"
-    volumes:
-      - ./app:/var/www/html
     secrets:
       - db-user-pass
 
@@ -23,13 +24,21 @@ services:
       - "3306:3306"
     volumes:
       - db-data:/var/lib/mysql
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
     secrets:
       - db-root-pass
       - db-user-pass
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 secrets:
   db-root-pass:
-    file: ./path/to/mysql-root-pass.example.txt
+    file: ./db/mysql-root-pass.example.txt
   db-user-pass:
-    file: ./path/to/mysql-user-pass.example.txt
+    file: ./db/mysql-user-pass.example.txt
 
+volumes:
+  db-data:
