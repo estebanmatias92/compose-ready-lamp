@@ -7,7 +7,7 @@ services:
       db:
         condition: service_healthy
     env_file:
-      - ./app/app.env
+      - app/.env.example
     ports:
       - "80:80"
     secrets:
