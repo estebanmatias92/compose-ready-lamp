@@ -1,0 +1,35 @@
+services:
+  web:
+    build:
+      context: ./app
+      target: development
+    env_file: 
+      - .env.example
+    ports:
+      - "80:80"
+    volumes:
+      - ./app:/var/www/html
+    secrets:
+      - db-user-pass
+
+  db:
+    image: mysql:5.7
+    environment:
+      - MYSQL_ROOT_PASSWORD_FILE=/run/secrets/db-root-pass
+      - MYSQL_DATABASE=${DB_NAME}
+      - MYSQL_USER=${DB_USER}
+      - MYSQL_PASSWORD_FILE=/run/secrets/db-user-pass
+    ports:
+      - "3306:3306"
+    volumes:
+      - db-data:/var/lib/mysql
+    secrets:
+      - db-root-pass
+      - db-user-pass
+
+secrets:
+  db-root-pass:
+    file: ./path/to/mysql-root-pass.example.txt
+  db-user-pass:
+    file: ./path/to/mysql-user-pass.example.txt
+
