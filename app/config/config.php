@@ -32,9 +32,8 @@ function get_secret($secret_name) {
 }
 
 
-/*
-    Stores every configuration detail needed in a asociative array
-*/
+
+// Stores every configuration detail needed in a asociative array
 return [
     'database' => [
         'host' => getenv('DB_HOST'),
