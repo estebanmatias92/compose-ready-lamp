@@ -38,9 +38,9 @@ secrets:
   db-root-pass:
     file: ./db/db-root-pass.example.txt
   db-name:
-    environment: ${DB_NAME}
+    environment: DB_NAME
   db-user:
-    environment: ${DB_USER}
+    environment: DB_USER
   db-user-pass:
     file: ./db/db-user-pass.example.txt
 
