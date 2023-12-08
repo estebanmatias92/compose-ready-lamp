@@ -15,8 +15,11 @@ services:
 
   db:
     image: mysql:5.7
-    env_file:
-      - ./db/mysql-dev.env
+    environment:
+      - MYSQL_ROOT_PASSWORD_FILE=/run/secrets/db-root-pass
+      - MYSQL_DATABASE=${DB_NAME}
+      - MYSQL_USER=${DB_USER}
+      - MYSQL_PASSWORD_FILE=/run/secrets/db-user-pass
     ports:
       - "3306:3306"
     volumes:
