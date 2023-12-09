@@ -6,11 +6,8 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    environment:
-      - PROJECT_NAME=${PROJECT_NAME:-${COMPOSE_PROJECT_NAME}}
-      - DB_HOST=${DATABASE_HOST}
-      - DB_NAME=${DATABASE_NAME}
-      - DB_USER=${DATABASE_USER}
+    env_file:
+      - ./app/app.env.dev
     ports:
       - "80:80"
     secrets:
@@ -18,11 +15,8 @@ services:
 
   db:
     image: mysql:5.7
-    environment:
-      - MYSQL_ROOT_PASSWORD_FILE=/run/secrets/db-root-pass
-      - MYSQL_DATABASE=${DATABASE_NAME}
-      - MYSQL_USER=${DATABASE_HOST}
-      - MYSQL_PASSWORD_FILE=/run/secrets/db-user-pass
+    env_file:
+      - ./db/db.env.dev
     ports:
       - "3306:3306"
     volumes:

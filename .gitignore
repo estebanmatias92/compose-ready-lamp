@@ -6,7 +6,7 @@ composer.phar
 vendor/
 
 ### env files
-#**/.env
+**/.env
 ### Secrets
 *pass*
 !*.example.txt
