@@ -6,10 +6,10 @@ services:
       db:
         condition: service_healthy
     environment:
-      - PROJECT_NAME="${PROJECT_NAME:-${COMPOSE_PROJECT_NAME}}"
-      - DB_HOST=${DATABASE_HOST}
-      - DB_NAME=${DATABASE_NAME}
-      - DB_USER=${DATABASE_USER}
+      - PROJECT_NAME=${PROJECT_NAME:-${COMPOSE_PROJECT_NAME}}
+      - DB_HOST=$DATABASE_HOST
+      - DB_NAME=$DATABASE_NAME
+      - DB_USER=$DATABASE_USER
     ports:
       - "80:80"
     secrets:
@@ -20,8 +20,8 @@ services:
     restart: always
     environment:
       - MYSQL_ROOT_PASSWORD_FILE=/run/secrets/db-root-pass
-      - MYSQL_DATABASE=${DATABASE_NAME}
-      - MYSQL_USER=${DATABASE_HOST}
+      - MYSQL_DATABASE=$DATABASE_NAME
+      - MYSQL_USER=$DATABASE_HOST
       - MYSQL_PASSWORD_FILE=/run/secrets/db-user-pass
     ports:
       - "3306:3306"
