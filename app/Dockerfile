@@ -1,11 +1,10 @@
 # The base image for the container 
 FROM php:8.1-apache as base
 # Values for Document Root path
-#ARG APACHE_DOCUMENT_ROOT=/var/www/html
-ENV APACHE_DOCUMENT_ROOT=${APACHE_DOCUMENT_ROOT:-/var/www/html}
+ENV APACHE_DOCUMENT_ROOT=/var/www/html
 # Install PHP tools (composer, xdebug)
 COPY --from=composer:2.4 /usr/bin/composer /usr/bin/composer
-# Change the Document Root for Apache
+# Make placeholders in apache .conf files
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf \
     && sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
 # Install extensions for PHP
@@ -54,8 +53,6 @@ RUN useradd -s /bin/bash -m $USER \
     && groupadd docker \
     && usermod -aG docker $USER
 USER $USER
-# Replace the host SSH exe with the WSL distro SSH exe
-#RUN git config --global --replace-all core.sshCommand "/usr/bin/ssh"
 
 
 #
