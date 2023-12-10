@@ -1,7 +1,6 @@
 services:
   web:
     build: ./app
-    restart: always
     depends_on:
       db:
         condition: service_healthy
@@ -10,6 +9,7 @@ services:
       - DB_HOST=${DATABASE_HOST}
       - DB_NAME=${DATABASE_NAME}
       - DB_USER=${DATABASE_USER}
+      - DB_PASS=/run/secrets/db-user-pass
     ports:
       - "80:80"
     secrets:
@@ -17,7 +17,6 @@ services:
 
   db:
     image: mysql:5.7
-    restart: always
     environment:
       - MYSQL_ROOT_PASSWORD_FILE=/run/secrets/db-root-pass
       - MYSQL_DATABASE=${DATABASE_NAME}
@@ -27,7 +26,6 @@ services:
       - "3306:3306"
     volumes:
       - db-data:/var/lib/mysql
-      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
     secrets:
       - db-root-pass
       - db-user-pass
@@ -36,12 +34,6 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-
-secrets:
-  db-root-pass:
-    file: ./db/db-root-pass.txt
-  db-user-pass:
-    file: ./db/db-user-pass.txt
 
 volumes:
   db-data:

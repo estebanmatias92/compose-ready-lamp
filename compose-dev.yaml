@@ -3,39 +3,20 @@ services:
     build:
       context: ./app
       target: development
-    depends_on:
-      db:
-        condition: service_healthy
-    env_file:
-      - ./app/app.env.dev
-    ports:
-      - "80:80"
-    secrets:
-      - db-user-pass
+    environment:
+      - DB_HOST=db
+      - DB_NAME=todo_app
+      - DB_USER=user
 
   db:
-    image: mysql:5.7
-    env_file:
-      - ./db/db.env.dev
-    ports:
-      - "3306:3306"
+    environment:
+      - MYSQL_DATABASE=todo_app
+      - MYSQL_USER=user
     volumes:
-      - db-data:/var/lib/mysql
       - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
-    secrets:
-      - db-root-pass
-      - db-user-pass
-    healthcheck:
-      test: ["CMD-SHELL", "mysqladmin ping -h localhost"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
 
 secrets:
   db-root-pass:
     file: ./db/db-root-pass.example.txt
   db-user-pass:
     file: ./db/db-user-pass.example.txt
-
-volumes:
-  db-data:
