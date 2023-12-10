@@ -41,7 +41,6 @@ RUN composer install \
 #
 FROM devdeps as development
 # Modifyble through cli args
-ARG WORKDIR=/com.docker.devenvironments.code
 ARG USER="vscode"
 # Create and change user
 RUN useradd -s /bin/bash -m $USER \
@@ -49,13 +48,8 @@ RUN useradd -s /bin/bash -m $USER \
     && usermod -aG docker $USER
 USER $USER
 
-# Binding wordir with server directory
-RUN ln -s $WORKDIR/app /var/www/html/
-
 # Replace the host SSH exe with the WSL distro SSH exe
 RUN git config --global --replace-all core.sshCommand "/usr/bin/ssh"
-
-ENTRYPOINT ["sleep", "infinity"] 
 
 
 #
