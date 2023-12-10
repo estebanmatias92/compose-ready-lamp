@@ -7,6 +7,8 @@ services:
       - DB_HOST=db
       - DB_NAME=todo_app
       - DB_USER=user
+    volumes:
+      - ./app:/var/www/html 
 
   db:
     environment:
