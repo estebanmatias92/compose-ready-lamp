@@ -49,7 +49,7 @@ RUN useradd -s /bin/bash -m $USER \
 USER $USER
 
 # Replace the host SSH exe with the WSL distro SSH exe
-RUN git config --global --replace-all core.sshCommand "/usr/bin/ssh"
+#RUN git config --global --replace-all core.sshCommand "/usr/bin/ssh"
 
 
 #
