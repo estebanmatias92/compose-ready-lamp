@@ -1,9 +1,15 @@
 # The base image for the container 
 FROM php:8.1-apache as base
+# Values for Document Root path
+#ARG APACHE_DOCUMENT_ROOT=/var/www/html
+ENV APACHE_DOCUMENT_ROOT=${APACHE_DOCUMENT_ROOT:-/var/www/html}
 # Install PHP tools (composer, xdebug)
 COPY --from=composer:2.4 /usr/bin/composer /usr/bin/composer
-# Set this if you use composer as super user at all times like in docker containers
-#ENV COMPOSER_ALLOW_SUPERUSER=1
+# Change the Document Root for Apache
+RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf \
+    && sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
+# Install extensions for PHP
+RUN docker-php-ext-install pdo pdo_mysql
 
 
 #
@@ -22,11 +28,12 @@ COPY --from=gloursdocker/docker / /
 # Builder stage for Runtime
 #     
 FROM base as builder
-
+# Set this if you use composer as super user at all times like in docker containers
+#ENV COMPOSER_ALLOW_SUPERUSER=1
 WORKDIR /app
-
+# Pull the package files
 COPY ./composer.* .
-
+# Install everything
 RUN composer install \
     --ignore-platform-reqs \
     --no-interaction \
@@ -47,7 +54,6 @@ RUN useradd -s /bin/bash -m $USER \
     && groupadd docker \
     && usermod -aG docker $USER
 USER $USER
-
 # Replace the host SSH exe with the WSL distro SSH exe
 #RUN git config --global --replace-all core.sshCommand "/usr/bin/ssh"
 
@@ -56,7 +62,7 @@ USER $USER
 # Production Target Stage 
 # Normally called without specifying "target" in compose
 #
-FROM php:8.1-apache as production
+FROM base as production
 
 WORKDIR /var/www/html
 

@@ -1,11 +1,13 @@
 services:
   web:
-    build: ./app
+    build:
+      context: ./app
     depends_on:
       db:
         condition: service_healthy
     environment:
       - PROJECT_NAME=${PROJECT_NAME:-${COMPOSE_PROJECT_NAME}}
+      - APACHE_DOCUMENT_ROOT=/var/www/html/public
       - DB_HOST=${DATABASE_HOST}
       - DB_NAME=${DATABASE_NAME}
       - DB_USER=${DATABASE_USER}
