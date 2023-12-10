@@ -16,6 +16,7 @@ services:
         source: /var/run/docker.sock
         target: /var/run/docker.sock
       - ./app:/var/www/html
+      - ./app:/com.docker.devenvironments.com/app
 
   db:
     environment:
