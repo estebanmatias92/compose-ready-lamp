@@ -1,39 +1,33 @@
-# The base image for the container 
+# Base Stage: Installs common dependencies and performs basic configurations
 FROM php:8.1-apache as base
-# Values for Document Root path
+
+# General configurations and necessary packages
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libzip-dev \
+    zip \
+    && docker-php-ext-install zip pdo pdo_mysql \
+    && a2enmod rewrite \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set custom Apache Document Root
 ENV APACHE_DOCUMENT_ROOT=/var/www/html
-# Install PHP tools (composer, xdebug)
-COPY --from=composer:2.4 /usr/bin/composer /usr/bin/composer
-# Make placeholders in apache .conf files
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf \
     && sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
-# Install extensions for PHP
-RUN docker-php-ext-install pdo pdo_mysql
+
+# Copy the source code (ensure a proper .dockerignore is used)
+COPY . /var/www/html
+WORKDIR /var/www/html
 
 
-#
-# Development dependencies
-#
-FROM base as devdeps
-# Install dev tools
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    git \
-    && apt-get clean
-# Install Docker tools (cli, buildx, compose) 
-COPY --from=gloursdocker/docker / /
 
-
-#
-# Builder stage for Runtime
-#     
-FROM base as builder
-# Set this if you use composer as super user at all times like in docker containers
-#ENV COMPOSER_ALLOW_SUPERUSER=1
-WORKDIR /app
-# Pull the package files
-COPY ./composer.* .
-# Install everything
+# Composer Stage: Installs Composer for use in other stages
+FROM composer:2.4 as composer
+COPY --from=base /var/www/html /var/www/html
+WORKDIR /var/www/html
 RUN composer install \
+    --no-dev \
+    --optimize-autoloader \
     --ignore-platform-reqs \
     --no-interaction \
     --no-plugins \
@@ -41,31 +35,35 @@ RUN composer install \
     --prefer-dist
 
 
-#
-# VS Code Stage 
-# (This is preferred to run as a Docker Dev Environment)
-#
-FROM devdeps as development
-# Modifyble through cli args
-ARG USER="vscode"
-# Create and change user
-RUN useradd -s /bin/bash -m $USER \
-    && groupadd docker \
-    && usermod -aG docker $USER
-USER $USER
+
+# Development Stage
+FROM base as development
+
+# Install development tools like Git and Xdebug
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    git \
+    && pecl install xdebug \
+    && docker-php-ext-enable xdebug \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy Composer and vendor dependencies
+COPY --from=composer /var/www/html/vendor /var/www/html/vendor
+
+# Copy and execute the user setup script
+COPY scripts/setup-dev-user.sh /usr/local/bin/setup-dev-user.sh
+RUN chmod +x /usr/local/bin/setup-dev-user.sh \
+    && /usr/local/bin/setup-dev-user.sh developer developer
+
+# Switch to the non-root user
+USER developer
 
 
-#
-# Production Target Stage 
-# Normally called without specifying "target" in compose
-#
+
+# Production Stage
 FROM base as production
 
-WORKDIR /var/www/html
+# Copy dependencies from Composer
+COPY --from=composer /var/www/html/vendor /var/www/html/vendor
 
-COPY --from=builder /app/vendor .
-COPY . .
-
-USER www-data
-
-CMD ["apache2-foreground"]
+ENTRYPOINT ["apache2-foreground"]

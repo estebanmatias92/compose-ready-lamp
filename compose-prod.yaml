@@ -4,6 +4,8 @@ services:
 
   db:
     restart: always
+    ports:
+      - "3306:3306"
 
 secrets:
   db-root-pass:
