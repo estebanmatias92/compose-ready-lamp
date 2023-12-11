@@ -1,6 +1,6 @@
 <?php
 
-namespace DockerizedPhp\Model;
+namespace DockerizedPhp\Models;
 
 class Task {
     public $id;
