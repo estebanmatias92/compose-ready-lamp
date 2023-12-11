@@ -23,5 +23,31 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     echo json_encode(['message' => 'Task added successfully']);
     exit;
 }
+?>
 
-// Puedes expandir esto para manejar otros tipos de solicitudes, como GET, PUT, DELETE
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>TODO App</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="main.js"></script>
+</head>
+<body>
+    <div class="container mt-5">
+        <h1>TODO App</h1>
+        <form id="task-form">
+            <div class="form-group">
+                <input type="text" id="title" class="form-control" placeholder="Title" required>
+            </div>
+            <div class="form-group">
+                <textarea id="description" class="form-control" placeholder="Description"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Add Task</button>
+        </form>
+        <div id="tasks" class="mt-3"></div>
+    </div>
+    
+    <?php phpinfo(); ?>
+</body>
+</html>

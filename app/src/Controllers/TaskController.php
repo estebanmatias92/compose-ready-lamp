@@ -3,7 +3,7 @@
 namespace DockerizedPhp;
 
 use DockerizedPhp\Database\Database;
-use DockerizedPhp\Model\Task;
+use DockerizedPhp\Models\Task;
 use PDO;
 
 class TaskManager {
